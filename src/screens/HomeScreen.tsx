@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
-    View, Text, TouchableOpacity, StyleSheet, SafeAreaView,
+    View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../hooks/useAuth';
+// 1. IMPORTA TU CUSTOM HOOK AQUÍ (Ajusta la ruta si es necesario)
+import { useLocation } from '../hooks/useLocation'; 
 import type { RootStackParamList } from '../navigation/navigationRef';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -12,9 +14,35 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'Home'>;
 export default function HomeScreen() {
     const navigation = useNavigation<Nav>();
     const { logout } = useAuth();
+    
+    // 2. CONECTAMOS EL SENSOR DE UBICACIÓN
+    const { location, errorMsg } = useLocation();
+
+    // 3. LOG AUTOMÁTICO: Saltará en la terminal apenas cargue la pantalla o cambie la ubicación
+    useEffect(() => {
+        if (location && location.latitude) {
+            console.log("📍 ¡Ubicación capturada con éxito en HomeScreen!", location);
+        }
+        if (errorMsg) {
+            console.log("❌ Error de GPS en HomeScreen:", errorMsg);
+        }
+    }, [location, errorMsg]);
 
     const handleLogout = async () => {
         await logout();
+    };
+
+    // 4. FUNCIÓN PARA MANDAR A TU BACKEND AL PRESIONAR EL BOTÓN DE LA CÁMARA
+    const handleAbrirCamara = () => {
+        if (location) {
+            console.log("🚀 Coordenadas listas para enviar antes de abrir cámara:", location.latitude, location.longitude);
+            // Aquí podrás meter tu fetch() hacia la IP de tu backend en el futuro
+        } else if (errorMsg) {
+            Alert.alert("Aviso de GPS", `No pudimos obtener tu ubicación: ${errorMsg}`);
+        }
+        
+        // Sigue navegando normalmente a la cámara
+        navigation.navigate('Camera');
     };
 
     return (
@@ -27,12 +55,18 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.content}>
+                {/* Opcional: Una pequeña barra de estado discreta para que veas si el GPS cargó */}
+                {location && (
+                    <Text style={styles.gpsStatus}>📍 GPS Conectado</Text>
+                )}
+
                 <View style={styles.card}>
                     <Text style={styles.cardTitle}>Traducir Señas</Text>
                     <Text style={styles.cardDesc}>
                         Usa la cámara para capturar señas y traducirlas al español en tiempo real.
                     </Text>
-                    <TouchableOpacity style={styles.btnPrimary} onPress={() => navigation.navigate('Camera')}>
+                    {/* Cambiamos el onPress para procesar/revisar la ubicación antes de ir a la cámara */}
+                    <TouchableOpacity style={styles.btnPrimary} onPress={handleAbrirCamara}>
                         <Text style={styles.btnPrimaryText}>Abrir Cámara</Text>
                     </TouchableOpacity>
                 </View>
@@ -80,6 +114,13 @@ const styles = StyleSheet.create({
     content: {
         padding: 20,
         gap: 16,
+    },
+    gpsStatus: {
+        fontSize: 12,
+        color: '#004aad',
+        fontWeight: '600',
+        textAlign: 'right',
+        marginBottom: -8,
     },
     card: {
         backgroundColor: '#ffffff',
