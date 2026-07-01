@@ -5,6 +5,7 @@ export type RootStackParamList = {
     Register: undefined;
     Home: undefined;
     Camera: undefined;
+    ModelScreen: undefined;
 };
 
 export const navigationRef = createNavigationContainerRef<RootStackParamList>();

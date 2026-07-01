@@ -76,7 +76,7 @@ export default function HomeScreen() {
                     <Text style={styles.cardDesc}>
                         Escribe texto en español y obtén su representación en lenguaje de señas.
                     </Text>
-                    <TouchableOpacity style={[styles.btnPrimary, styles.btnSecondary]}>
+                    <TouchableOpacity  style={[styles.btnPrimary, styles.btnSecondary]} onPress={() => navigation.navigate('ModelScreen')}>
                         <Text style={styles.btnPrimaryText}>Próximamente</Text>
                     </TouchableOpacity>
                 </View>

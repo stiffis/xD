@@ -9,6 +9,7 @@ import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import CameraScreen from '../screens/CameraScreen';
 import type { RootStackParamList } from './navigationRef';
+import ModelScreen from '../screens/ModelScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -28,8 +29,10 @@ export default function AppNavigator() {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 {accessToken ? (
                     <>
+                    
                         <Stack.Screen name="Home" component={HomeScreen} />
                         <Stack.Screen name="Camera" component={CameraScreen} />
+                        <Stack.Screen name="ModelScreen" component={ModelScreen} />
                     </>
                 ) : (
                     <>
